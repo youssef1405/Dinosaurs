@@ -67,26 +67,37 @@ async function createDinoObject() {
   return dinosObjects;
 }
 
-createDinoObject();
-
 // Create Human Object
-
-// Use IIFE to get human data from form
-
-// Create Dino Compare Method 1
-// NOTE: Weight in JSON file is in lbs, height in inches.
-
-// Create Dino Compare Method 2
-// NOTE: Weight in JSON file is in lbs, height in inches.
-
-// Create Dino Compare Method 3
-// NOTE: Weight in JSON file is in lbs, height in inches.
+function createHumanObject(name, weight, height, diet) {
+  return new Human(name, weight, height, diet);
+}
 
 // Generate Tiles for each Dino in Array
+function createGrid(dinos, human) {
+  const grid = document.getElementById('grid');
+  const creatures = [human, ...dinos];
+  grid.innerHTML = creatures
+    .map((creature) => {
+      let dinoChecker = creature instanceof Dino;
+      return `
+        <div class='grid-item'>
+            <h3>${dinoChecker ? creature.species : creature.name}</h3>
+            <img src='images/${
+              dinoChecker ? creature.species.toLowerCase() : 'human'
+            }.png'/>
+            <p>${dinoChecker ? creature.fact : ''}</p>
+        </div>
+    `;
+    })
+    .join('');
+}
 
 // Add tiles to DOM
 
 // Remove form from screen
+function hideElement(element) {
+  element.style.display = 'none';
+}
 
 // On button click, prepare and display infographic
 document.getElementById('btn').addEventListener(
@@ -101,8 +112,16 @@ document.getElementById('btn').addEventListener(
     // IIFE returning a function which is closing over the form variable.
     // the returned can access the IIFE's score because of closure even
     // after being returned.
-    return function () {
-      form.style.display = 'none';
+    return async function () {
+      hideElement(form);
+      const human = createHumanObject(
+        nameInput.value,
+        weightInput.value,
+        feetInput.value,
+        diet.value
+      );
+      const dinos = await createDinoObject();
+      createGrid(dinos, human);
     };
   })()
 );
