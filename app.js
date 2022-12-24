@@ -1,5 +1,14 @@
 // global variables
 
+async function getData() {
+  return fetch('./dino.json')
+    .then((res) => res.json())
+    .then((data) => data)
+    .catch((err) => console.log(err));
+}
+
+// console.log(getData());
+
 // Create Dino Constructor
 
 // Create Dino Objects
