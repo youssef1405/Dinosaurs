@@ -1,4 +1,5 @@
 // global variables
+const tilesOrder = [1, 2, 3, 4, 6, 7, 8, 9];
 
 /**
  * extract dinos data from the dino.json file
@@ -72,6 +73,15 @@ function createHumanObject(name, weight, height, diet) {
   return new Human(name, weight, height, diet);
 }
 
+/**
+ * Randomize the order of the tiles
+ * @returns order of the tile
+ */
+function getTileOrder() {
+  const random = Math.floor(Math.random() * tilesOrder.length);
+  return tilesOrder.splice(random, 1)[0];
+}
+
 // Generate Tiles for each Dino in Array
 function createGrid(dinos, human) {
   const grid = document.getElementById('grid');
@@ -80,7 +90,9 @@ function createGrid(dinos, human) {
     .map((creature) => {
       let dinoChecker = creature instanceof Dino;
       return `
-        <div class='grid-item'>
+        <div class='grid-item' style="order:${
+          dinoChecker ? getTileOrder() : 5
+        }">
             <h3>${dinoChecker ? creature.species : creature.name}</h3>
             <img src='images/${
               dinoChecker ? creature.species.toLowerCase() : 'human'
@@ -91,8 +103,6 @@ function createGrid(dinos, human) {
     })
     .join('');
 }
-
-// Add tiles to DOM
 
 // Remove form from screen
 function hideElement(element) {
