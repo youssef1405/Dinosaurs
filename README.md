@@ -8,4 +8,9 @@ The facts displayed should be random per dinosaur with an opportunity of display
 ## How it works
 
 - Complete the form, then click on "Compare Me!" button
+
+![image](https://user-images.githubusercontent.com/18706769/209454177-b25a4d26-1abf-408c-a098-f516baaeb0c2.png)
+
 - Form will be hidden and the infographic will appear
+
+![image](https://user-images.githubusercontent.com/18706769/209454194-2acc6a65-dba9-42eb-b35d-8efb1da8cdd5.png)
