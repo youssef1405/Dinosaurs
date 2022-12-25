@@ -31,20 +31,35 @@ function Dino(species, weight, height, diet, origin, when, fact) {
   this.origin = origin;
   this.when = when;
   this.fact = fact;
+  this.facts = [];
 }
 
 // This IIFE initialize the app by setting the prorotypal inheritance
+// Human and Dino inherit from Creature class
+// The three compare methods are added to the Creature's prototype
 (function initializeApp() {
   Human.prototype = Object.create(Creature.prototype);
   Dino.prototype = Object.create(Creature.prototype);
-  Creature.prototype.compareHeight = function (obj) {
-    console.log(this.height);
+
+  Creature.prototype.compareHeight = function (human) {
+    return this.height > human.height
+      ? `${this.species} is ${this.height} inches. It is taller than you (${human.height} inches)`
+      : `${this.species} is ${this.height} inches. It is shorter than you (${human.height} inches)`;
   };
-  Creature.prototype.compareWeight = function () {
-    return this.weight;
+
+  Creature.prototype.compareWeight = function (human) {
+    return this.weight > human.weight
+      ? `${this.species} is heavier (${this.weight}lbs) than you. You have chance to escape 😎`
+      : `${this.species} is lighter than you. They are ${this.weight}lbs`;
   };
-  Creature.prototype.compareDiet = function (obj) {
-    console.log(this.diet);
+
+  Creature.prototype.compareDiet = function (human) {
+    if (this.diet === 'herbavor')
+      return `${this.species} was a ${this.diet} and you are ${human.diet}. You are safe, they eat plants only 😀`;
+    else if (this.diet === 'ominvor')
+      return `${this.species} was a ${this.diet} and you are ${human.diet}. They eat plants and animals 😒`;
+    else
+      return `${this.species} was a ${this.diet} and you are ${human.diet}. Be carful, they eat animals only 😲`;
   };
 })();
 
@@ -63,19 +78,47 @@ async function createDinoObject() {
         dino.fact
       )
   );
-  console.log(dinosObjects);
-  console.log(dinosObjects[0].compareWeight());
   return dinosObjects;
 }
 
 // Create Human Object
-function createHumanObject(name, weight, height, diet) {
-  return new Human(name, weight, height, diet);
+function createHumanObject(name, weight, feet, inches, diet) {
+  const humanHeight = 12 * parseInt(feet) + parseInt(inches);
+  return new Human(name, parseInt(weight), humanHeight, diet);
+}
+
+/**
+ * fills the facts array of each dino with 6 facts
+ * @param {[object]} dinos - array of dinos objects
+ * @param {object} human - human object
+ */
+function createFacts(dinos, human) {
+  dinos.forEach(function (dino) {
+    dino.species === 'Pigeon'
+      ? (dino.facts = [dino.fact])
+      : (dino.facts = [
+          dino.fact,
+          dino.compareWeight(human),
+          dino.compareDiet(human),
+          dino.compareHeight(human),
+          `${dino.species} lived in ${dino.origin}`,
+          `${dino.species} was born during ${dino.when}`,
+        ]);
+  });
+}
+
+/**
+ * returns a random fact from the facts array of each dino
+ * @param {Object} dino
+ * @returns {string} fact about dino
+ */
+function getRandomFact(dino) {
+  return dino.facts[Math.floor(Math.random() * dino.facts.length)];
 }
 
 /**
  * Randomize the order of the tiles
- * @returns order of the tile
+ * @returns{Number} -  order of the tile
  */
 function getTileOrder() {
   const random = Math.floor(Math.random() * tilesOrder.length);
@@ -97,7 +140,7 @@ function createGrid(dinos, human) {
             <img src='images/${
               dinoChecker ? creature.species.toLowerCase() : 'human'
             }.png'/>
-            <p>${dinoChecker ? creature.fact : ''}</p>
+            <p>${dinoChecker ? getRandomFact(creature) : ''}</p>
         </div>
     `;
     })
@@ -119,18 +162,18 @@ document.getElementById('btn').addEventListener(
     const inchesInput = document.getElementById('inches');
     const weightInput = document.getElementById('weight');
     const dietSelect = document.getElementById('diet');
-    // IIFE returning a function which is closing over the form variable.
-    // the returned can access the IIFE's score because of closure even
-    // after being returned.
+
     return async function () {
       hideElement(form);
       const human = createHumanObject(
         nameInput.value,
         weightInput.value,
         feetInput.value,
-        diet.value
+        inchesInput.value,
+        dietSelect.value
       );
       const dinos = await createDinoObject();
+      createFacts(dinos, human);
       createGrid(dinos, human);
     };
   })()
